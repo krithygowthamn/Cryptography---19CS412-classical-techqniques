@@ -188,7 +188,7 @@ def decrypt(ciphertext, key):
 
 # Example usage:
 key = "LOVE"
-plaintext = "GOWTHAM"
+plaintext = "NGOWTHAM"
 encrypted_text = encrypt(plaintext, key)
 print("Encrypted:", encrypted_text)
 decrypted_text = decrypt(encrypted_text, key)
