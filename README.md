@@ -188,7 +188,7 @@ def decrypt(ciphertext, key):
 
 # Example usage:
 key = "LOVE"
-plaintext = "NGOWTHAM"
+plaintext = "GOWTHAMN"
 encrypted_text = encrypt(plaintext, key)
 print("Encrypted:", encrypted_text)
 decrypted_text = decrypt(encrypted_text, key)
@@ -196,7 +196,8 @@ print("Decrypted:", decrypted_text)
 
 ```
 ## OUTPUT:
-![Screenshot 2024-02-29 203728](https://github.com/krithygowthamn/Cryptography---19CS412-classical-techqniques/assets/122247810/4d275bca-d3ed-4b56-9747-bc9899a90de5)
+![Screenshot 2024-03-01 132656](https://github.com/krithygowthamn/Cryptography---19CS412-classical-techqniques/assets/122247810/e5485d2e-b3cf-4b50-a7ea-7eae6576d299)
+
 
 ## RESULT:
 The program is executed successfully
