@@ -228,63 +228,70 @@ Testing algorithm with different key values.
 
 ## PROGRAM:
 ```
+
 import numpy as np
 
-def string_to_matrix(text, n):
-    # Convert the string to uppercase and remove spaces
-    text = text.upper().replace(" ", "")
-    # Pad the string with 'X' if its length is not a multiple of n
-    if len(text) % n != 0:
-        text += "X" * (n - len(text) % n)
-    # Convert the string to a list of ASCII values
-    ascii_values = [ord(char) - ord("A") for char in text]
-    # Reshape the list into a matrix of size (len(text)//n) x n
-    matrix = np.array(ascii_values).reshape(-1, n)
-    return matrix
+def generate_key_matrix(key):
+    key = key.upper().replace(" ", "")
+    n = int(len(key) ** 0.5)
+    if n * n != len(key):
+        raise ValueError("Key length must be a perfect square")
+    key_matrix = np.array([ord(char) - ord('A') for char in key]).reshape(n, n)
+    return key_matrix
 
-def matrix_to_string(matrix):
-    # Convert the matrix to a string by converting each ASCII value to its corresponding character
-    text = ""
-    for row in matrix:
-        for value in row:
-            text += chr(value + ord("A"))
-    return text
+def generate_inverse_key_matrix(key_matrix):
+    determinant = np.linalg.det(key_matrix)
+    inverse_matrix = np.linalg.inv(key_matrix)
+    adjugate_matrix = np.round(inverse_matrix * determinant).astype(int)
+    det_inv = pow(int(determinant), -1, 26)
+    inverse_key_matrix = (adjugate_matrix * det_inv) % 26
+    return inverse_key_matrix
 
-def encrypt(plaintext, key):
-    n = len(key)
-    # Convert plaintext and key to matrices
-    plaintext_matrix = string_to_matrix(plaintext, n)
-    key_matrix = np.array(key)
-    # Calculate the encrypted matrix: C = P * K (mod 26)
-    encrypted_matrix = np.dot(plaintext_matrix, key_matrix) % 26
-    # Convert the encrypted matrix back to a string
-    ciphertext = matrix_to_string(encrypted_matrix)
-    return ciphertext
+## ENCRYPTION
 
-def decrypt(ciphertext, key):
-    n = len(key)
-    # Convert ciphertext and key to matrices
-    ciphertext_matrix = string_to_matrix(ciphertext, n)
-    key_matrix = np.array(key)
-    # Calculate the inverse of the key matrix
-    key_inverse = np.linalg.inv(key_matrix)
-    key_inverse = np.round(key_inverse * np.linalg.det(key_matrix)).astype(int) % 26
-    # Calculate the decrypted matrix: P = C * K^-1 (mod 26)
-    decrypted_matrix = np.dot(ciphertext_matrix, key_inverse) % 26
-    # Convert the decrypted matrix back to a string
-    plaintext = matrix_to_string(decrypted_matrix)
-    return plaintext
+def hill_encrypt(plain_text, key_matrix):
+    plain_text = plain_text.upper().replace(" ", "").replace("J", "I")
+    n = key_matrix.shape[0]
+    while len(plain_text) % n != 0:
+        plain_text += 'X'
+    plain_text = [ord(char) - ord('A') for char in plain_text]
+    plain_matrix = np.array(plain_text).reshape(-1, n)
+    encrypted_matrix = np.dot(plain_matrix, key_matrix) % 26
+    encrypted_text = ""
+    for row in encrypted_matrix:
+        for char in row:
+            encrypted_text += chr(char + ord('A'))
+    return encrypted_text
 
-# Example usage:
-plaintext = "GOWTHAM"
-key = [[6, 24, 1], [13, 16, 10], [20, 17, 15]]  # Example key matrix
-ciphertext = encrypt(plaintext, key)
-print("Encrypted:", ciphertext)
-decrypted_text = decrypt(ciphertext, key)
-print("Decrypted:", decrypted_text)
+## DECRYPTION
+
+def hill_decrypt(encrypted_text, key_matrix):
+    n = key_matrix.shape[0]
+    inverse_key_matrix = generate_inverse_key_matrix(key_matrix)
+    encrypted_text = encrypted_text.upper().replace(" ", "").replace("J", "I")
+    encrypted_text = [ord(char) - ord('A') for char in encrypted_text]
+    encrypted_matrix = np.array(encrypted_text).reshape(-1, n)
+    decrypted_matrix = np.dot(encrypted_matrix, inverse_key_matrix) % 26
+    decrypted_text = ""
+    for row in decrypted_matrix:
+        for char in row:
+            decrypted_text += chr(char + ord('A'))
+    return decrypted_text
+
+key = "hill"
+plaintext = "gowtham"
+key_matrix = generate_key_matrix(key)
+
+encrypted_text = hill_encrypt(plaintext, key_matrix)
+print("Plaintext:", plaintext)
+print("Encrypted text:", encrypted_text)
+
+
+decrypted_text = hill_decrypt(encrypted_text, key_matrix)
+print("Decrypted text:", decrypted_text)
 ```
 ## OUTPUT:
-![Screenshot 2024-02-29 203804](https://github.com/krithygowthamn/Cryptography---19CS412-classical-techqniques/assets/122247810/e9b21f15-0e1e-473b-9c56-be713bcffe6a)
+![Screenshot 2024-05-08 085305](https://github.com/krithygowthamn/Cryptography---19CS412-classical-techqniques/assets/122247810/e13193b5-44c5-4904-b22d-87239f4dc91e)
 
 ## RESULT:
 The program is executed successfully
